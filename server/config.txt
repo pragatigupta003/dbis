@@ -1,0 +1,5 @@
+PORT = 3001
+CLIENT_URL = 
+SERVER_URL = 
+SALT = 72
+SECRET = Mahadev1/0
