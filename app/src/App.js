@@ -11,9 +11,11 @@ import Instructor from './routes/instructor';
 import RunningDept from './routes/runningDept';
 
 
+
 const App = () => {
   return (
     <div>
+      
       <Router>
         <Routes>
           <Route path="/login" element={<Login/>}/>
@@ -27,8 +29,10 @@ const App = () => {
         </Routes>
       </Router>
     </div>
+    
   );
 }
+
 
 
 export default App;
