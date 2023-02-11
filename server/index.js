@@ -6,29 +6,30 @@ const fs = require("fs");
 
 const server = express();
 
+require('./middlewares/passport-middleware');
+
 //middlewares
-app.use(express.json());
-app.use(cors({origin:'http://localhost:3005', credentials: true}));
+server.use(express.json());
+server.use(cors({origin:'http://localhost:3005', credentials: true}));
 
 //maxAge attribute
 
-app.use(
+server.use(
     session({
         secret: 'mahadev1/0',
         resave: false,
         saveUninitialized: true,
     })
-    );
+    ); 
     
-    
-require('./middlewares/passport-middleware');
 
-app.use(passport.initialize());
+server.use(passport.initialize());
+server.use(passport.session());
 
 //routes
 const routes = require('./routes');
 
-app.use(routes);
+server.use(routes);
 
 let config_val = fs.readFileSync("./config.txt").toString().replace("\n", " ").split(" ");
 
