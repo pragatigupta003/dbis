@@ -4,14 +4,14 @@ const passport = require('passport');
 const crypto = require('crypto');
 const SALT = '72';
 
-exports.personalInfo = (req, res) =>{
+exports.personalInfo = (req, res) => {
     try {
         console.log("Success Home");
         return res.status(200).json({
             success: true
         });
     } catch (error) {
-        console.log("personalInfo Error");   
+        console.log("personalInfo Error");
     }
 }
 
@@ -33,58 +33,31 @@ exports.dummy = async (req, res) => {
 exports.registration = async (req, res) => {
     try {
         const { id, password } = req.body;
-    if(id == null || password == null){
-        console.log("reg error");
-        return res.sendStatus(403).json({
-            message: "No null id or password"
-        });
-    }
-    crypto.pbkdf2(password, SALT, 310000, 32, 'sha256', function (err, hashedPassword) {
-        if (err) { return res.sendStatus(403); }
-        
-        db.query('INSERT INTO user_password (id, hashed_password) VALUES ($1, $2)', [id, hashedPassword], function (err, data) {
-            if (err) { 
-                console.log("local error");
-                return res.sendStatus(403); }
+        if (id == null || password == null) {
+            console.log("reg error");
+            return res.sendStatus(403).json({
+                message: "No null id or password"
+            });
+        }
+        crypto.pbkdf2(password, SALT, 310000, 32, 'sha256', async (err, hashedPassword) => {
+            if (err) { return res.sendStatus(403); }
+            console.log("registration");
+
+            const data = await db.query('INSERT INTO user_password (id, hashed_password) VALUES ($1, $2) returning id', [id, hashedPassword.toString('hex')]);
 
             const user = data.rows[0];
-
+            
             req.session.user = {
-                id : user.id
+                id: user.id
             }
+            return res.json({
+                user : req.session.user
+            });
         });
-                
-        res.status(200)
-        return res.json({ user: req.session.user })
-      });
+        // return res.sendStatus(200);
     } catch (error) {
-        console.log("error");
+        console.log(error);
     }
-    const { id, password } = req.body;
-    if(id == null || password == null){
-        console.log("reg error");
-        return res.sendStatus(403).json({
-            message: "No null id or password"
-        });
-    }
-    crypto.pbkdf2(password, SALT, 310000, 32, 'sha256', function (err, hashedPassword) {
-        if (err) { return res.sendStatus(403); }
-        
-        db.query('INSERT INTO user_password (id, hashed_password) VALUES ($1, $2)', [id, hashedPassword], function (err, data) {
-            if (err) { 
-                console.log("local error");
-                return res.sendStatus(403); }
-
-            const user = data.rows[0];
-
-            req.session.user = {
-                id : user.id
-            }
-        });
-                
-        res.status(200)
-        return res.json({ user: req.session.user })
-      });
 }
 
 exports.logout = async (req, res) => {

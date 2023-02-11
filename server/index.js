@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require('passport');
 const session = require('express-session');
 const cors = require('cors');
+// const bodyParser = require('body-parser');
 const fs = require("fs");
 
 const server = express();
@@ -9,9 +10,10 @@ const server = express();
 require('./middlewares/passport-middleware');
 
 //middlewares
-server.use(express.json());
-server.use(cors({origin:'http://localhost:3005', credentials: true}));
+server.use(cors({ origin: 'http://localhost:3005', credentials: true }));
 
+server.use(express.json());
+server.use(express.urlencoded({extended: true}));
 //maxAge attribute
 
 server.use(
@@ -20,8 +22,7 @@ server.use(
         resave: false,
         saveUninitialized: true,
     })
-    ); 
-    
+);
 
 server.use(passport.initialize());
 server.use(passport.session());
@@ -35,6 +36,6 @@ let config_val = fs.readFileSync("./config.txt").toString().replace("\n", " ").s
 
 const PORT = Number(config_val[2]);
 
-server.listen(PORT, () =>{
+server.listen(PORT, () => {
     console.log(`server listening on port ${PORT}`);
 })
